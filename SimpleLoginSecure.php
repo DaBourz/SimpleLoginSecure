@@ -26,11 +26,11 @@ define('PHPASS_HASH_PORTABLE', false);
  *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  * 
  * @package   SimpleLoginSecure
- * @version   1.0.1
- * @author    Alex Dunae, Dialect <alex[at]dialect.ca>
- * @copyright Copyright (c) 2008, Alex Dunae
+ * @version   2.0
+ * @author    Stéphane Bourzeix, Pixelmio <stephane[at]bourzeix.com>
+ * @copyright Copyright (c) 2012, Stéphane Bourzeix
  * @license   http://www.gnu.org/licenses/gpl-3.0.txt
- * @link      http://dialect.ca/code/ci-simple-login-secure/
+ * @link      https://github.com/DaBourz/SimpleLoginSecure
  */
 class SimpleLoginSecure
 {
