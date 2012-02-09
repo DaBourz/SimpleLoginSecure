@@ -22,7 +22,7 @@ There are three primary modifications to Anthony’s original code.  Most import
 For more information on why md5 hashing is not enough, see the excellent post about password schemes on the Matasano Security blog.
 
 Installation and configuration
-Copy SimpleLoginSecure.php and the entire phpass-0.3 directory to your system/application/libraries directory.
+Copy SimpleLoginSecure.php and the entire phpass-0.3 directory to your application/libraries directory.
 
 Create your database table using the following SQL sample.  You can also edit the hash length and portability constants at the top of SimpleLoginSecure.php.
 
