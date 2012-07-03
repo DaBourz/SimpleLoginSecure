@@ -88,6 +88,41 @@ class SimpleLoginSecure
 	}
 
 	/**
+	 * Edit a user password
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	string
+	 * @return	bool
+	 */
+	function edit_password($user_email = '', $user_pass = '')
+	{
+		$this->CI =& get_instance();
+
+		// Hash user_pass using phpass
+		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
+		$user_pass_hashed = $hasher->HashPassword($user_pass);
+
+		// Insert new password into the database
+		$data = array(
+			'user_pass' => $user_pass_hashed,
+			'user_modified' => date('c')
+		);
+
+		$this->CI->db->set($data);
+
+		$this->CI->db->where('user_email', $user_email);
+
+		if(!$this->CI->db->update('user', $data)) // There was a problem!
+			return FALSE;
+
+		return TRUE;
+			
+
+
+	}
+
+	/**
 	 * Login and sets session variables
 	 *
 	 * @access	public
