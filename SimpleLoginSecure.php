@@ -28,6 +28,7 @@ define('PHPASS_HASH_PORTABLE', false);
  * @package   SimpleLoginSecure
  * @version   2.0
  * @author    Stéphane Bourzeix, Pixelmio <stephane[at]bourzeix.com>
+ * @author    Diego Castro <castroc.diego[at]gmail.com>
  * @copyright Copyright (c) 2012, Stéphane Bourzeix
  * @license   http://www.gnu.org/licenses/gpl-3.0.txt
  * @link      https://github.com/DaBourz/SimpleLoginSecure
@@ -85,6 +86,46 @@ class SimpleLoginSecure
 			$this->login($user_email, $user_pass);
 		
 		return true;
+	}
+
+	/**
+	 * Edit a user password
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	string
+	 * @return	bool
+	 */
+	function edit_password($user_email = '', $user_pass = '')
+	{
+		$this->CI =& get_instance();
+
+		// Check if the password is the same as the old one
+		$this->CI->db->select('user_pass');
+		$query = $this->CI->db->get_where($this->user_table, array('user_email' => $user_email));
+		$user_data = $query->row_array();
+
+		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
+		if ($hasher->CheckPassword($user_pass, $user_data['user_pass'])) //user_pass is the same
+			return FALSE;
+
+		// Hash user_pass using phpass
+		$user_pass_hashed = $hasher->HashPassword($user_pass);
+
+		// Insert new password into the database
+		$data = array(
+			'user_pass' => $user_pass_hashed,
+			'user_modified' => date('c')
+		);
+
+		$this->CI->db->set($data);
+
+		$this->CI->db->where('user_email', $user_email);
+
+		if(!$this->CI->db->update($this->user_table, $data)) // There was a problem!
+			return FALSE;
+
+		return TRUE;
 	}
 
 	/**
