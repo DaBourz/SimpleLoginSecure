@@ -9,6 +9,7 @@ _SimpleLogin-Secure for Code Igniter is a modified version of Anthony Graddy’s
 _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._  
 
 * ChangeLog:  
+  * MODIFIED PHPASS for no access to /dev/random
   * Upgraded to use the PHPASS version 0.3  
   * Changed the "getwhere()" calls to "get_where()" for Code Igniter 2.0 compatibility.  
 
