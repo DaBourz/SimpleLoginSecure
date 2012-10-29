@@ -35,7 +35,7 @@ define('PHPASS_HASH_PORTABLE', false);
 class SimpleLoginSecure
 {
 	var $CI;
-	var $user_table = 'users';
+	var $user_table = 'ci_users';
 
 	/**
 	 * Create a user account
@@ -173,6 +173,59 @@ class SimpleLoginSecure
 
 		return $this->CI->db->delete($this->user_table, array('user_id' => $user_id));
 	}
+	
+	
+	/**
+	 * Change user pass
+	 * @access	public
+	 * @param type $user_email
+	 * @param type $user_pass
+	 * @return bool|boolean
+	 * **/
+	 
+	function change($user_email = '', $user_pass = '') 
+	{
+		$this->CI =& get_instance();
+
+		//Make sure account info was sent
+		if($user_email == '' OR $user_pass == '') {
+			return false;
+		}
+		
+		
+		//Check if user is logged in
+		if (!$this->CI->session->userdata('user_id')){
+		    return false;
+		}
+		
+		
+		//Check against user table
+		$this->CI->db->where('user_email', $user_email); 
+		$query = $this->CI->db->get_where($this->user_table);
+		
+		if (!$query->num_rows() > 0) //if user does not exist return false
+			return 'ERROR';
+
+		//Hash user_pass using phpass
+		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
+		$user_pass_hashed = $hasher->HashPassword($user_pass);
+
+		
+		//Update database
+		$data = array(
+		    
+		    'user_pass' => $user_pass_hashed,		   
+		    'user_modified' => date('c'),
+		    
+		);
+		
+		$this->CI->db->where('user_email', $this->CI->session->userdata('user_email')); 
+		$this->CI->db->update($this->user_table, $data);
+		
+		
+		return true;
+	}
+	
 	
 }
 ?>

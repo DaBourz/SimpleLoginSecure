@@ -48,25 +48,25 @@ class PasswordHash {
 	function get_random_bytes($count)
 	{
 		$output = '';
-		if (is_readable('/dev/urandom') &&
+	/*	if (is_readable('/dev/urandom') &&
 		    ($fh = @fopen('/dev/urandom', 'rb'))) {
 			$output = fread($fh, $count);
 			fclose($fh);
-		}
+		}*/
 
 		if (strlen($output) < $count) {
 			$output = '';
-		/*	for ($i = 0; $i < $count; $i += 16) {
-				$this->random_state =
-				    md5(microtime() . $this->random_state);
-				$output .=
-				    pack('H*', md5($this->random_state));
-			}*/
+//			for ($i = 0; $i < $count; $i += 16) {
+//				$this->random_state =
+//				    md5(microtime() . $this->random_state);
+//				$output .=
+//				    pack('H*', md5($this->random_state));
+//			}
 			
-			//MODIFIED FOR NO ACCESS TO /DEV/RANDOM
 			for ($i = 0; $i < $count / 8; $i++) {
 			    $output .= dechex(mt_rand(0, 0x7fffffff));
 			  }
+			  
 			$output = substr($output, 0, $count);
 		}
 

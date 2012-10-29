@@ -2,14 +2,17 @@
 **Name: SimpleLoginSecure 2.0**  
 **Released: Feb 8, 2012**  
 **CI Version: Tested with CodeIgniter 2.1.0**  
-**Author: Stéphane Bourzeix**  
+**Author: Stéphane Bourzeix** 
+**Modified: Daniele Piccone**   
 
 _SimpleLogin-Secure was written by Alex Dunae._  
 _SimpleLogin-Secure for Code Igniter is a modified version of Anthony Graddy’s Simplelogin library._  
 _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._  
 
+
 * ChangeLog:  
-  * MODIFIED PHPASS for no access to /dev/random
+  * Patched version to work when no access to /dev/random is available
+  * Added change function
   * Upgraded to use the PHPASS version 0.3  
   * Changed the "getwhere()" calls to "get_where()" for Code Igniter 2.0 compatibility.  
 
@@ -47,6 +50,9 @@ The methods exposed by SimpleLogin-Secure are identical to those of Simplelogin.
 
     // create a new user
     $this->simpleloginsecure->create('user@example.com', 'uS$rpass!');
+	
+	// change password (must be logged in)
+    $this->simpleloginsecure->change('user@example.com', 'uS$rpass!');
 
     // attempt to login
     if($this->simpleloginsecure->login('user@example.com', 'uS$rpass!')) {
