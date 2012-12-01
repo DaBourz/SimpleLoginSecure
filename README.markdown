@@ -31,7 +31,7 @@ Create your database table using the following SQL sample.  You can also edit th
       `user_date` datetime NOT NULL default '0000-00-00 00:00:00',
       `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
       `user_last_login` datetime NULL default NULL,
-	  `user_activation` varchar(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+      `user_activation` varchar(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
        PRIMARY KEY  (`user_id`),
        UNIQUE KEY `user_email` (`user_email`)
     ) DEFAULT CHARSET=utf8; 
@@ -70,4 +70,4 @@ _Credits_
 _The original Simplelogin library was written by Anthony Graddy._    
 _SimpleLogin-Secure was written by Alex Dunae, 2008._  
 _SimpleLogin-Secure new version, 2.0, for Code Igniter II by Stéphane Bourzeix 2011/2012._
-_SimpleLogin-Secure new version, 3.0, for Code Igniter II by Daniele Piccone 2012
+_SimpleLogin-Secure new version, 3.0, for Code Igniter II by Daniele Piccone 2012_
