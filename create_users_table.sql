@@ -7,6 +7,7 @@ CREATE TABLE `users` (
   `user_date` datetime NOT NULL default '0000-00-00 00:00:00',
   `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
   `user_last_login` datetime NULL default NULL,
+  `user_activation` varchar(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   PRIMARY KEY  (`user_id`),
   UNIQUE KEY `user_email` (`user_email`)
 ) DEFAULT CHARSET=utf8;

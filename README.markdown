@@ -1,21 +1,15 @@
 #SimpleLogin Secure
-**Name: SimpleLoginSecure 2.0**  
-**Released: Feb 8, 2012**  
-**CI Version: Tested with CodeIgniter 2.1.0**  
-**Author: Stéphane Bourzeix** 
-**Modified: Daniele Piccone**   
+**Name: SimpleLoginSecure 3.0**  
+**Released: Dec 1, 2012**  
+**CI Version: Tested with CodeIgniter 2.1.2**  
+**Author: Daniele Piccone**  
 
 _SimpleLogin-Secure was written by Alex Dunae._  
 _SimpleLogin-Secure for Code Igniter is a modified version of Anthony Graddy’s Simplelogin library._  
 _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._  
-
+_SimpleLogin-Secure version 3 is by Daniele Piccone from Stéphane Bourzeix's code._ 
 
 * ChangeLog:  
-  * Patched version to work when no access to /dev/random is available
-  * Added change function
-  * Upgraded to use the PHPASS version 0.3  
-  * Changed the "getwhere()" calls to "get_where()" for Code Igniter 2.0 compatibility.  
-
 
 In Anthony’s words:  
 
@@ -37,6 +31,7 @@ Create your database table using the following SQL sample.  You can also edit th
       `user_date` datetime NOT NULL default '0000-00-00 00:00:00',
       `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
       `user_last_login` datetime NULL default NULL,
+	  `user_activation` varchar(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
        PRIMARY KEY  (`user_id`),
        UNIQUE KEY `user_email` (`user_email`)
     ) DEFAULT CHARSET=utf8; 
@@ -48,11 +43,11 @@ The methods exposed by SimpleLogin-Secure are identical to those of Simplelogin.
     // load the library
     $this->load->library('SimpleLoginSecure');
 
-    // create a new user
+    // create a new user and send an activation mail (message is in SimpleLoginSecure.php)
     $this->simpleloginsecure->create('user@example.com', 'uS$rpass!');
 	
-	// change password (must be logged in)
-    $this->simpleloginsecure->change('user@example.com', 'uS$rpass!');
+	// activate the user and login
+	$this->simpleloginsecure->activate('md5 hash');
 
     // attempt to login
     if($this->simpleloginsecure->login('user@example.com', 'uS$rpass!')) {
@@ -75,3 +70,4 @@ _Credits_
 _The original Simplelogin library was written by Anthony Graddy._    
 _SimpleLogin-Secure was written by Alex Dunae, 2008._  
 _SimpleLogin-Secure new version, 2.0, for Code Igniter II by Stéphane Bourzeix 2011/2012._
+_SimpleLogin-Secure new version, 3.0, for Code Igniter II by Daniele Piccone 2012

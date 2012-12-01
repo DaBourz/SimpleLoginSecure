@@ -1,4 +1,7 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 
 require_once('phpass-0.3/PasswordHash.php');
 
@@ -21,6 +24,7 @@ define('PHPASS_HASH_PORTABLE', false);
  *     `user_date` datetime NOT NULL default '0000-00-00 00:00:00' COMMENT 'Creation date',
  *     `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
  *     `user_last_login` datetime NULL default NULL,
+ *	   `user_activation` varchar(32) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
  *     PRIMARY KEY  (`user_id`),
  *     UNIQUE KEY `user_email` (`user_email`),
  *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -32,200 +36,254 @@ define('PHPASS_HASH_PORTABLE', false);
  * @license   http://www.gnu.org/licenses/gpl-3.0.txt
  * @link      https://github.com/DaBourz/SimpleLoginSecure
  */
-class SimpleLoginSecure
-{
-	var $CI;
-	var $user_table = 'ci_users';
+class SimpleLoginSecure {
 
-	/**
-	 * Create a user account
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	bool
-	 * @return	bool
-	 */
-	function create($user_email = '', $user_pass = '', $auto_login = true) 
-	{
-		$this->CI =& get_instance();
-		
+    var $CI;
+    var $user_table = 'ci_users';
+
+    /**
+     * Create a user account
+     *
+     * @access	public
+     * @param	string
+     * @param	string
+     * @param	bool
+     * @return	bool
+     */
+    function create($user_email = '', $user_pass = '', $auto_login = true) {
+	$this->CI = & get_instance();
 
 
-		//Make sure account info was sent
-		if($user_email == '' OR $user_pass == '') {
-			return false;
-		}
-		
-		//Check against user table
-		$this->CI->db->where('user_email', $user_email); 
-		$query = $this->CI->db->get_where($this->user_table);
-		
-		if ($query->num_rows() > 0) //user_email already exists
-			return false;
 
-		//Hash user_pass using phpass
-		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
-		$user_pass_hashed = $hasher->HashPassword($user_pass);
-
-		//Insert account into the database
-		$data = array(
-					'user_email' => $user_email,
-					'user_pass' => $user_pass_hashed,
-					'user_date' => date('c'),
-					'user_modified' => date('c'),
-				);
-
-		$this->CI->db->set($data); 
-
-		if(!$this->CI->db->insert($this->user_table)) //There was a problem! 
-			return false;						
-				
-		if($auto_login)
-			$this->login($user_email, $user_pass);
-		
-		return true;
+	//Make sure account info was sent
+	if ($user_email == '' OR $user_pass == '') {
+	    return false;
 	}
 
-	/**
-	 * Login and sets session variables
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @return	bool
-	 */
-	function login($user_email = '', $user_pass = '') 
-	{
-		$this->CI =& get_instance();
+	//Check against user table
+	$this->CI->db->where('user_email', $user_email);
+	$query = $this->CI->db->get_where($this->user_table);
 
-		if($user_email == '' OR $user_pass == '')
-			return false;
+	if ($query->num_rows() > 0) //user_email already exists
+	    return false;
+
+	//Hash user_pass using phpass
+	$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
+	$user_pass_hashed = $hasher->HashPassword($user_pass);
 
 
-		//Check if already logged in
-		if($this->CI->session->userdata('user_email') == $user_email)
-			return true;
+	//Generate key from email
+	$key = md5(uniqid($user_email, true));
+
+
+
+	//Insert account into the database
+	$data = array(
+	    'user_email' => $user_email,
+	    'user_pass' => $user_pass_hashed,
+	    'user_date' => date('c'),
+	    'user_modified' => date('c'),
+	    'user_activation' => $key
+	);
+
+	$this->CI->db->set($data);
+
+	if (!$this->CI->db->insert($this->user_table)) //There was a problem! 
+	    return false;
+
 		
-		
-		//Check against user table
-		$this->CI->db->where('user_email', $user_email); 
-		$query = $this->CI->db->get_where($this->user_table);
-
-		
-		if ($query->num_rows() > 0) 
-		{
-			$user_data = $query->row_array(); 
-
-			$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
-
-			if(!$hasher->CheckPassword($user_pass, $user_data['user_pass']))
-				return false;
-
-			//Destroy old session
-			$this->CI->session->sess_destroy();
-			
-			//Create a fresh, brand new session
-			$this->CI->session->sess_create();
-
-			$this->CI->db->simple_query('UPDATE ' . $this->user_table  . ' SET user_last_login = NOW() WHERE user_id = ' . $user_data['user_id']);
-
-			//Set session data
-			unset($user_data['user_pass']);
-			$user_data['user'] = $user_data['user_email']; // for compatibility with Simplelogin
-			$user_data['logged_in'] = true;
-			$this->CI->session->set_userdata($user_data);
-			
-			return true;
-		} 
-		else 
-		{
-			return false;
-		}	
-
-	}
-
-	/**
-	 * Logout user
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function logout() {
-		$this->CI =& get_instance();		
-
-		$this->CI->session->sess_destroy();
-	}
-
-	/**
-	 * Delete user
-	 *
-	 * @access	public
-	 * @param integer
-	 * @return	bool
-	 */
-	function delete($user_id) 
-	{
-		$this->CI =& get_instance();
-		
-		if(!is_numeric($user_id))
-			return false;			
-
-		return $this->CI->db->delete($this->user_table, array('user_id' => $user_id));
-	}
+	//Send activation mail
 	
+	//Edit this to send a custom message
+	$to = $user_email;
+	$subject = 'Welcome to My Website!';
+	$link = 'http://www.mywebsite.com/activate';
+	$message = "Welcome to My Website!\n\nPlease follow this link to activate your account:\n$link\n\n---\nThe Gazettr team";
+	$headers = 'From: about@mywebsite.com' . "\r\n" . 'Reply-To: about@mywebsite.com' . "\r\n" . 'X-Mailer: PHP/' . phpversion();
+	//Edit this to send a custom message	
 	
-	/**
-	 * Change user pass
-	 * @access	public
-	 * @param type $user_email
-	 * @param type $user_pass
-	 * @return bool|boolean
-	 * **/
-	 
-	function change($user_email = '', $user_pass = '') 
-	{
-		$this->CI =& get_instance();
 
-		//Make sure account info was sent
-		if($user_email == '' OR $user_pass == '') {
-			return false;
-		}
-		
-		
-		//Check if user is logged in
-		if (!$this->CI->session->userdata('user_id')){
-		    return false;
-		}
-		
-		
-		//Check against user table
-		$this->CI->db->where('user_email', $user_email); 
-		$query = $this->CI->db->get_where($this->user_table);
-		
-		if (!$query->num_rows() > 0) //if user does not exist return false
-			return 'ERROR';
+	mail($to, $subject, $message, $headers);
 
-		//Hash user_pass using phpass
-		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
-		$user_pass_hashed = $hasher->HashPassword($user_pass);
+	if ($auto_login)
+	    $this->login($user_email, $user_pass);
 
+
+	return true;
+    }
+
+    /**
+     * Login and sets session variables
+     *
+     * @access	public
+     * @param	string
+     * @param	string
+     * @return	bool
+     */
+    function login($user_email = '', $user_pass = '') {
+	$this->CI = & get_instance();
+
+	if ($user_email == '' OR $user_pass == '')
+	    return false;
+
+
+	//Check if already logged in
+	if ($this->CI->session->userdata('user_email') == $user_email)
+	    return true;
+
+
+	//Check against user table
+	$this->CI->db->where('user_email', $user_email);
+	$query = $this->CI->db->get_where($this->user_table);
+
+
+	if ($query->num_rows() > 0) {
+	    $user_data = $query->row_array();
+
+	    //Check password
+	    $hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
+	    if (!$hasher->CheckPassword($user_pass, $user_data['user_pass']))
+		return false;
+
+	    //Check if user is activated
+	    if ($user_data['user_activation'] != 0)
+		return false;
+
+	    //Destroy old session
+	    $this->CI->session->sess_destroy();
+
+	    //Create a fresh, brand new session
+	    $this->CI->session->sess_create();
+
+	    $this->CI->db->simple_query('UPDATE ' . $this->user_table . ' SET user_last_login = NOW() WHERE user_id = ' . $user_data['user_id']);
+
+	    //Set session data
+	    unset($user_data['user_pass']);
+	    $user_data['user'] = $user_data['user_email']; // for compatibility with Simplelogin
+	    $user_data['logged_in'] = true;
+	    $this->CI->session->set_userdata($user_data);
+
+	    return true;
+	}
+	else {
+	    return false;
+	}
+    }
+
+    /**
+     * Logout user
+     *
+     * @access	public
+     * @return	void
+     */
+    function logout() {
+	$this->CI = & get_instance();
+
+	$this->CI->session->sess_destroy();
+    }
+
+    /**
+     * Delete user
+     *
+     * @access	public
+     * @param integer
+     * @return	bool
+     */
+    function delete($user_id) {
+	$this->CI = & get_instance();
+
+	if (!is_numeric($user_id))
+	    return false;
+
+	return $this->CI->db->delete($this->user_table, array('user_id' => $user_id));
+    }
+
+    /**
+     * Change user pass
+     * @access	public
+     * @param type $user_email
+     * @param type $user_pass
+     * @return bool|boolean
+     * * */
+    function change($user_email = '', $user_pass = '') {
+	$this->CI = & get_instance();
+
+	//Make sure account info was sent
+	if ($user_email == '' OR $user_pass == '') {
+	    return false;
+	}
+
+
+	//Check if user is logged in
+	if (!$this->CI->session->userdata('user_id')) {
+	    return false;
+	}
+
+
+	//Check against user table
+	$this->CI->db->where('user_email', $user_email);
+	$query = $this->CI->db->get_where($this->user_table);
+
+	if (!$query->num_rows() > 0) //if user does not exist return false
+	    return 'ERROR';
+
+	//Hash user_pass using phpass
+	$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
+	$user_pass_hashed = $hasher->HashPassword($user_pass);
+
+
+	//Update database
+	$data = array(
+	    'user_pass' => $user_pass_hashed,
+	    'user_modified' => date('c'),
+	);
+
+	$this->CI->db->where('user_email', $this->CI->session->userdata('user_email'));
+	$this->CI->db->update($this->user_table, $data);
+
+
+	return true;
+    }
+
+    /**
+     * Activate User
+     * @access	public
+     * @param type $user_email
+     * @param type $key
+     * @return bool|boolean
+     * * */
+    function activate($key = '') {
+	$this->CI = & get_instance();
+	
+	if ($key) {
+
+	    //Check for key into database
+	    $this->CI->db->where('user_activation', $key);
+	    $query = $this->CI->db->get_where($this->user_table);	     
+	     
+	    if ($query->num_rows() > 0) {
 		
-		//Update database
-		$data = array(
+		$user_data = $query->row_array();
+		if ($user_data['user_activation'] == $key) {
+
+		    //Unflag and activate user
+		    $data = array(
+			'user_activation' => 0,
+		    );
+
+		    $this->CI->db->where('user_email', $user_data['user_email']);
+		    $this->CI->db->update($this->user_table, $data);
 		    
-		    'user_pass' => $user_pass_hashed,		   
-		    'user_modified' => date('c'),
-		    
-		);
-		
-		$this->CI->db->where('user_email', $this->CI->session->userdata('user_email')); 
-		$this->CI->db->update($this->user_table, $data);
-		
-		
-		return true;
+		    //Login the user
+		    $this->login($user_data['user_email'],$user_data['user_pass']);
+		    return true;
+		}
+	    } else {
+		return false;
+	    }
 	}
-	
-	
+    }
+
 }
+
 ?>
