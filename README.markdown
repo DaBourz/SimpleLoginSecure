@@ -70,4 +70,3 @@ _Credits_
 _The original Simplelogin library was written by Anthony Graddy._    
 _SimpleLogin-Secure was written by Alex Dunae, 2008._  
 _SimpleLogin-Secure new version, 2.0, for Code Igniter II by Stéphane Bourzeix 2011/2012._
-_SimpleLogin-Secure new version, 3.0, for Code Igniter II by Daniele Piccone 2012_
