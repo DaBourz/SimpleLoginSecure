@@ -11,6 +11,7 @@ _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._
 * ChangeLog:  
   * Upgraded to use the PHPASS version 0.3  
   * Changed the "getwhere()" calls to "get_where()" for Code Igniter 2.0 compatibility.  
+  * Added the Update function to allow to change the user's email from your classes.
 
 
 In Anthony’s words:  
