@@ -28,7 +28,7 @@ define('PHPASS_HASH_PORTABLE', false);
  * @package   SimpleLoginSecure
  * @version   2.1
  * @author    Stéphane Bourzeix, Pixelmio <stephane[at]bourzeix.com>
- * @copyright Copyright (c) 2012, Stéphane Bourzeix
+ * @copyright Copyright (c) 2012-2013, Stéphane Bourzeix
  * @license   http://www.gnu.org/licenses/gpl-3.0.txt
  * @link      https://github.com/DaBourz/SimpleLoginSecure
  */
