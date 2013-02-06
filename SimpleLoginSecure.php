@@ -26,7 +26,7 @@ define('PHPASS_HASH_PORTABLE', false);
  *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  * 
  * @package   SimpleLoginSecure
- * @version   2.0
+ * @version   2.1
  * @author    Stéphane Bourzeix, Pixelmio <stephane[at]bourzeix.com>
  * @copyright Copyright (c) 2012, Stéphane Bourzeix
  * @license   http://www.gnu.org/licenses/gpl-3.0.txt
@@ -84,6 +84,54 @@ class SimpleLoginSecure
 		if($auto_login)
 			$this->login($user_email, $user_pass);
 		
+		return true;
+	}
+
+	/**
+	 * Update a user account
+	 *
+	 * Only updates the email, just here for you can 
+	 * extend / use it in your own class.
+	 *
+	 * @access	public
+	 * @param integer
+	 * @param	string
+	 * @param	bool
+	 * @return	bool
+	 */
+	function update($user_id = null, $user_email = '', $auto_login = true) 
+	{
+		$this->CI =& get_instance();
+
+		//Make sure account info was sent
+		if($user_id == null OR $user_email == '') {
+			return false;
+		}
+		
+		//Check against user table
+		$this->CI->db->where('user_id', $user_id);
+		$query = $this->CI->db->get_where($this->user_table);
+		
+		if ($query->num_rows() = 0) // user don't exists
+			return false;
+		
+		//Update account into the database
+		$data = array(
+					'user_email' => $user_email,
+					'user_modified' => date('c'),
+				);
+ 
+		$this->CI->db->where('user_id', $user_id);
+
+		if(!$this->CI->db->update($this->user_table, $data)) //There was a problem! 
+			return false;						
+				
+		if($auto_login){
+			$user_data['user_email'] = $user_email;
+			$user_data['user'] = $user_data['user_email']; // for compatibility with Simplelogin
+			
+			$this->CI->session->set_userdata($user_data);
+			}
 		return true;
 	}
 
