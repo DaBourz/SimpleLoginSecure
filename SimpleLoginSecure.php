@@ -26,7 +26,7 @@ define('PHPASS_HASH_PORTABLE', false);
  *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  * 
  * @package   SimpleLoginSecure
- * @version   2.1
+ * @version   2.1.1
  * @author    Stéphane Bourzeix, Pixelmio <stephane[at]bourzeix.com>
  * @copyright Copyright (c) 2012-2013, Stéphane Bourzeix
  * @license   http://www.gnu.org/licenses/gpl-3.0.txt
@@ -112,8 +112,9 @@ class SimpleLoginSecure
 		$this->CI->db->where('user_id', $user_id);
 		$query = $this->CI->db->get_where($this->user_table);
 		
-		if ($query->num_rows() = 0) // user don't exists
+		if ($query->num_rows() == 0){ // user don't exists
 			return false;
+		}
 		
 		//Update account into the database
 		$data = array(
