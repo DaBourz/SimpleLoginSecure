@@ -1,7 +1,8 @@
 #SimpleLogin Secure
-**Name: SimpleLoginSecure 2.1**  
+**Name: SimpleLoginSecure 2.1.1**  
 **Released: Feb 8, 2012**  
-**CI Version: Tested with CodeIgniter 2.1.0**  
+**Updated: Feb 6, 2013**  
+**CI Version: Tested with CodeIgniter 2.1.0 and later**  
 **Author: Stéphane Bourzeix**  
 
 _SimpleLogin-Secure was written by Alex Dunae._  
@@ -13,6 +14,7 @@ _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._
   * Changed the "getwhere()" calls to "get_where()" for Code Igniter 2.0 compatibility.  
   * Added the Update function to allow to change the user's email from your classes.
   * Added the edit_password function to compare and change passwords
+  * Bug fixes
 
 
 In Anthony’s words:  
