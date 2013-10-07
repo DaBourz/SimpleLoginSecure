@@ -1,7 +1,7 @@
 #SimpleLogin Secure
-**Name: SimpleLoginSecure 2.1.1**  
+**Name: SimpleLoginSecure 2.1.2**  
 **Released: Feb 8, 2012**  
-**Updated: Feb 6, 2013**  
+**Updated: Oct 7, 2013**  
 **CI Version: Tested with CodeIgniter 2.1.0 and later**  
 **Author: Stéphane Bourzeix**  
 
@@ -14,6 +14,7 @@ _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._
   * Changed the "getwhere()" calls to "get_where()" for Code Igniter 2.0 compatibility.  
   * Added the Update function to allow to change the user's email from your classes.
   * Added the edit_password function to compare and change passwords
+  * Removed the Now() MySQL call and using PHP date() instead
   * Bug fixes
 
 
@@ -25,7 +26,8 @@ There are three primary modifications to Anthony’s original code.  Most import
 
 For more information on why md5 hashing is not enough, see the excellent post about password schemes on the Matasano Security blog.
 
-Installation and configuration
+**Installation and configuration :**
+
 Copy SimpleLoginSecure.php and the entire phpass-0.3 directory to your application/libraries directory.
 
 Create your database table using the following SQL sample.  You can also edit the hash length and portability constants at the top of SimpleLoginSecure.php.
@@ -67,8 +69,15 @@ The methods exposed by SimpleLogin-Secure are identical to those of Simplelogin.
     // delete by user ID
     $this->simpleloginsecure->delete($user_id); 
 
+	// Update user Email
+	$this->simpleloginsecure->update($user_id, $user_email, $auto_login);
+
+	// Update Password
+	$this->simpleloginsecure->edit_password($user_email, $old_pass, $new_pass)
+
+
 
 _Credits_  
 _The original Simplelogin library was written by Anthony Graddy._    
 _SimpleLogin-Secure was written by Alex Dunae, 2008._  
-_SimpleLogin-Secure new version, 2.0, for Code Igniter II by Stéphane Bourzeix 2011/2012._
+_SimpleLogin-Secure new version, 2.0, for Code Igniter II by Stéphane Bourzeix 2011/2013._
