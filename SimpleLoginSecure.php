@@ -27,10 +27,7 @@ define('PHPASS_HASH_PORTABLE', false);
  *     UNIQUE KEY `user_email` (`user_email`),
  *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
  *
- * @package   SimpleLoginSecure with soft delete
- * @version   1.0
  *
- * # Original is 
  * @package   SimpleLoginSecure
  * @version   2.0
  * @author    Stéphane Bourzeix, Pixelmio <stephane[at]bourzeix.com>
@@ -42,7 +39,7 @@ class SimpleLoginSecure
 {
 	var $CI;
 	var $user_table;
-
+	var $prefix_key;
 
 	function __construct($config=array()){
 		$this->config = $config;
