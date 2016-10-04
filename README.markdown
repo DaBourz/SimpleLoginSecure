@@ -16,6 +16,7 @@ _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._
   * Added the edit_password function to compare and change passwords
   * Removed the Now() MySQL call and using PHP date() instead
   * Bug fixes
+  * Added TAG v2.1.2 as a reference to the old version for CI 2
 
 
 In Anthony’s words:  
