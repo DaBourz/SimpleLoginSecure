@@ -13,13 +13,27 @@ define('PHPASS_HASH_PORTABLE', false);
  * Simplelogin expects the following database setup. If you are not using 
  * this setup you may need to do some tweaking.
  *   
- * 
+ * For MYSQL 5.0 and 5.5 use :
+ *
  *   CREATE TABLE `users` (
  *     `user_id` int(10) unsigned NOT NULL auto_increment,
  *     `user_email` varchar(255) NOT NULL default '',
  *     `user_pass` varchar(60) NOT NULL default '',
- *     `user_date` datetime NOT NULL default '0000-00-00 00:00:00' COMMENT 'Creation date',
+ *     `user_date` datetime NOT NULL default '0000-00-00 00:00:00',
  *     `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
+ *     `user_last_login` datetime NULL default NULL,
+ *     PRIMARY KEY  (`user_id`),
+ *     UNIQUE KEY `user_email` (`user_email`),
+ *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ *
+ * For MYSQL 5.6 and more use :
+ *
+ *   CREATE TABLE `users` (
+ *     `user_id` int(10) unsigned NOT NULL auto_increment,
+ *     `user_email` varchar(255) NOT NULL default '',
+ *     `user_pass` varchar(60) NOT NULL default '',
+ *     `user_date` datetime NOT NULL default CURRENT_TIMESTAMP,
+ *     `user_modified` datetime NOT NULL default CURRENT_TIMESTAMP,
  *     `user_last_login` datetime NULL default NULL,
  *     PRIMARY KEY  (`user_id`),
  *     UNIQUE KEY `user_email` (`user_email`),
@@ -34,8 +48,19 @@ define('PHPASS_HASH_PORTABLE', false);
  */
 class SimpleLoginSecure
 {
-	var $CI;
-	var $user_table = 'users';
+	protected $CI; // CodeIgniter object
+	protected $user_table = 'users'; // Table name
+	
+	/**
+	* Constructor
+	* Get the current CI object
+	*/
+	public function __construct()
+    {
+        // Assign the CodeIgniter super-object
+		$this->CI =& get_instance();
+	}
+
 
 	/**
 	 * Create a user account
@@ -48,9 +73,6 @@ class SimpleLoginSecure
 	 */
 	function create($user_email = '', $user_pass = '', $auto_login = true) 
 	{
-		$this->CI =& get_instance();
-		
-
 
 		//Make sure account info was sent
 		if($user_email == '' OR $user_pass == '') {
@@ -101,8 +123,6 @@ class SimpleLoginSecure
 	 */
 	function update($user_id = null, $user_email = '', $auto_login = true) 
 	{
-		$this->CI =& get_instance();
-
 		//Make sure account info was sent
 		if($user_id == null OR $user_email == '') {
 			return false;
@@ -146,7 +166,6 @@ class SimpleLoginSecure
 	 */
 	function login($user_email = '', $user_pass = '') 
 	{
-		$this->CI =& get_instance();
 
 		if($user_email == '' OR $user_pass == '')
 			return false;
@@ -171,11 +190,14 @@ class SimpleLoginSecure
 			if(!$hasher->CheckPassword($user_pass, $user_data['user_pass']))
 				return false;
 
-			//Destroy old session
-			$this->CI->session->sess_destroy();
-			
 			//Create a fresh, brand new session
-			$this->CI->session->sess_create();
+			if (CI_VERSION >= '3.0') {
+				$this->CI->session->sess_regenerate(TRUE);
+			} else {
+				//Destroy old session
+				$this->CI->session->sess_destroy();
+				$this->CI->session->sess_create();
+			}
 
 			$this->CI->db->simple_query('UPDATE ' . $this->user_table  . ' SET user_last_login = "' . date('c') . '" WHERE user_id = ' . $user_data['user_id']);
 
@@ -200,9 +222,7 @@ class SimpleLoginSecure
 	 * @access	public
 	 * @return	void
 	 */
-	function logout() {
-		$this->CI =& get_instance();		
-
+	function logout() {	
 		$this->CI->session->sess_destroy();
 	}
 
@@ -215,7 +235,6 @@ class SimpleLoginSecure
 	 */
 	function delete($user_id) 
 	{
-		$this->CI =& get_instance();
 		
 		if(!is_numeric($user_id))
 			return false;			
@@ -237,7 +256,7 @@ class SimpleLoginSecure
 	*/
 	function edit_password($user_email = '', $old_pass = '', $new_pass = '')
 	{
-		$this->CI =& get_instance();
+		
 		// Check if the password is the same as the old one
 		$this->CI->db->select('user_pass');
 		$query = $this->CI->db->get_where($this->user_table, array('user_email' => $user_email));

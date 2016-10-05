@@ -1,15 +1,18 @@
 #SimpleLogin Secure
-**Name: SimpleLoginSecure 2.1.2**  
+**Name: SimpleLoginSecure 3.0**  
 **Released: Feb 8, 2012**  
-**Updated: Oct 7, 2013**  
-**CI Version: Tested with CodeIgniter 2.1.0 and later**  
+**Updated: Oct 5, 2016**  
+**CI Version: Works now with CodeIgniter 2 and 3**  
 **Author: Stéphane Bourzeix**  
 
 _SimpleLogin-Secure was written by Alex Dunae._  
 _SimpleLogin-Secure for Code Igniter is a modified version of Anthony Graddy’s Simplelogin library._  
-_SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._  
+_SimpleLogin-Secure version 2 and 3 are by Stéphane Bourzeix from Alex Dunae's code._  
 
 * ChangeLog:  
+  * Ugraded to work with BOTH CodeIgniter 2.0 AND 3.0
+  * Added a version test and use "sess regenerate" or "sess create" depending on version
+  * Added a new SQL file for creating the table for newer versions of MYSQL
   * Upgraded to use the PHPASS version 0.3  
   * Changed the "getwhere()" calls to "get_where()" for Code Igniter 2.0 compatibility.  
   * Added the Update function to allow to change the user's email from your classes.
@@ -17,6 +20,7 @@ _SimpleLogin-Secure version 2 is by Stéphane Bourzeix from Alex Dunae's code._
   * Removed the Now() MySQL call and using PHP date() instead
   * Bug fixes
   * Added TAG v2.1.2 as a reference to the old version for CI 2
+
 
 
 In Anthony’s words:  
@@ -31,7 +35,8 @@ For more information on why md5 hashing is not enough, see the excellent post ab
 
 Copy SimpleLoginSecure.php and the entire phpass-0.3 directory to your application/libraries directory.
 
-Create your database table using the following SQL sample.  You can also edit the hash length and portability constants at the top of SimpleLoginSecure.php.
+Create your database table using the following SQL sample. SQL files are provided.  
+You can also edit the hash length and portability constants at the top of SimpleLoginSecure.php.
 
     CREATE TABLE `users` (
       `user_id` int(10) unsigned NOT NULL auto_increment,
@@ -44,8 +49,21 @@ Create your database table using the following SQL sample.  You can also edit th
        UNIQUE KEY `user_email` (`user_email`)
     ) DEFAULT CHARSET=utf8; 
 
+or for newer versions of MYSQL (>=5.6) use :
 
-Use  
+	CREATE TABLE `users` (
+  		`user_id` int(10) unsigned NOT NULL auto_increment,
+  		`user_email` varchar(255) NOT NULL default '',
+  		`user_pass` varchar(60) NOT NULL default '',
+  		`user_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  		`user_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  		`user_last_login` datetime DEFAULT NULL,
+  	PRIMARY KEY  (`user_id`),
+  	UNIQUE KEY `user_email` (`user_email`)
+	) DEFAULT CHARSET=utf8;
+
+**Use**  
+
 The methods exposed by SimpleLogin-Secure are identical to those of Simplelogin.
 
     // load the library
@@ -82,3 +100,4 @@ _Credits_
 _The original Simplelogin library was written by Anthony Graddy._    
 _SimpleLogin-Secure was written by Alex Dunae, 2008._  
 _SimpleLogin-Secure new version, 2.0, for Code Igniter II by Stéphane Bourzeix 2011/2013._
+_SimpleLogin-Secure new version, 3.0, for Code Igniter II and III by Stéphane Bourzeix 2016._
