@@ -12,32 +12,17 @@ define('PHPASS_HASH_PORTABLE', false);
  *
  * Simplelogin expects the following database setup. If you are not using 
  * this setup you may need to do some tweaking.
- *   
- * For MYSQL 5.0 and 5.5 use :
- *
- *   CREATE TABLE `users` (
- *     `user_id` int(10) unsigned NOT NULL auto_increment,
- *     `user_email` varchar(255) NOT NULL default '',
- *     `user_pass` varchar(60) NOT NULL default '',
- *     `user_date` datetime NOT NULL default '0000-00-00 00:00:00',
- *     `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
- *     `user_last_login` datetime NULL default NULL,
- *     PRIMARY KEY  (`user_id`),
- *     UNIQUE KEY `user_email` (`user_email`),
- *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
- *
- * For MYSQL 5.6 and more use :
- *
- *   CREATE TABLE `users` (
- *     `user_id` int(10) unsigned NOT NULL auto_increment,
- *     `user_email` varchar(255) NOT NULL default '',
- *     `user_pass` varchar(60) NOT NULL default '',
- *     `user_date` datetime NOT NULL default CURRENT_TIMESTAMP,
- *     `user_modified` datetime NOT NULL default CURRENT_TIMESTAMP,
- *     `user_last_login` datetime NULL default NULL,
- *     PRIMARY KEY  (`user_id`),
- *     UNIQUE KEY `user_email` (`user_email`),
- *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ * 
+ * DROP TABLE IF exists `nomina_users`;
+ * CREATE TABLE `nomina_users` (
+ *   `user_id` INTEGER unsigned NOT NULL DEFAULT 00000000000000,
+ *   `user_email` TEXT NOT NULL DEFAULT '',
+ *   `user_pass` TEXT NOT NULL DEFAULT '',
+ *   `user_date` DATETIME NOT NULL DEFAULT '1000-01-01 00:00:00',
+ *   `user_modified` DATETIME NOT NULL DEFAULT '1000-01-01 00:00:00',
+ *   `user_last_login` DATETIME NULL DEFAULT '1000-01-01 00:00:00',
+ *   PRIMARY KEY  (`user_id`)
+ * );
  * 
  * @package   SimpleLoginSecure
  * @version   2.1.1
@@ -200,7 +185,9 @@ class SimpleLoginSecure
 				$this->CI->session->sess_create();
 			}
 
-			$this->CI->db->simple_query('UPDATE ' . $this->user_table  . ' SET user_last_login = "' . date('c') . '" WHERE user_id = ' . $user_data['user_id']);
+			$data = array('user_last_login' => date('c'));
+			$this->db->where('user_id', $user_data['user_id']); 
+			$this->db->update($this->user_table, $data);
 
 			//Set session data
 			unset($user_data['user_pass']);
