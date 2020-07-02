@@ -30,7 +30,7 @@ class PasswordHash {
 	var $portable_hashes;
 	var $random_state;
 
-	function PasswordHash($iteration_count_log2, $portable_hashes)
+	function __construct($iteration_count_log2, $portable_hashes)
 	{
 		$this->itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
@@ -45,11 +45,20 @@ class PasswordHash {
 			$this->random_state .= getmypid();
 	}
 
+	function PasswordHash($iteration_count_log2, $portable_hashes)
+	{
+		self::__construct($iteration_count_log2, $portable_hashes);
+	}
+
 	function get_random_bytes($count)
 	{
 		$output = '';
-		if (is_readable('/dev/urandom') &&
-		    ($fh = @fopen('/dev/urandom', 'rb'))) {
+if (PHP_VERSION >= '5')
+	$readable = @is_readable('/dev/urandom');
+else
+	$readable = is_readable('/dev/urandom');
+
+		if ($readable  && ($fh = @fopen('/dev/urandom', 'rb'))) {
 			$output = fread($fh, $count);
 			fclose($fh);
 		}
@@ -59,8 +68,10 @@ class PasswordHash {
 			for ($i = 0; $i < $count; $i += 16) {
 				$this->random_state =
 				    md5(microtime() . $this->random_state);
-				$output .=
-				    pack('H*', md5($this->random_state));
+if (PHP_VERSION >= '5')
+				$output .= md5($this->random_state, TRUE);
+else
+				$output .= pack('H*', md5($this->random_state));
 			}
 			$output = substr($output, 0, $count);
 		}
@@ -104,12 +115,12 @@ class PasswordHash {
 	function crypt_private($password, $setting)
 	{
 		$output = '*0';
-		if (substr($setting, 0, 2) == $output)
+		if (substr($setting, 0, 2) === $output)
 			$output = '*1';
 
 		$id = substr($setting, 0, 3);
 		# We use "$P$", phpBB3 uses "$H$" for the same thing
-		if ($id != '$P$' && $id != '$H$')
+		if ($id !== '$P$' && $id !== '$H$')
 			return $output;
 
 		$count_log2 = strpos($this->itoa64, $setting[3]);
@@ -119,7 +130,7 @@ class PasswordHash {
 		$count = 1 << $count_log2;
 
 		$salt = substr($setting, 4, 8);
-		if (strlen($salt) != 8)
+		if (strlen($salt) !== 8)
 			return $output;
 
 		# We're kind of forced to use MD5 here since it's the only
@@ -209,11 +220,11 @@ class PasswordHash {
 	{
 		$random = '';
 
-		if (CRYPT_BLOWFISH == 1 && !$this->portable_hashes) {
+		if (CRYPT_BLOWFISH === 1 && !$this->portable_hashes) {
 			$random = $this->get_random_bytes(16);
 			$hash =
 			    crypt($password, $this->gensalt_blowfish($random));
-			if (strlen($hash) == 60)
+			if (strlen($hash) === 60)
 				return $hash;
 		}
 
@@ -231,7 +242,7 @@ class PasswordHash {
 		$hash =
 		    $this->crypt_private($password,
 		    $this->gensalt_private($random));
-		if (strlen($hash) == 34)
+		if (strlen($hash) === 34)
 			return $hash;
 
 		# Returning '*' on error is safe here, but would _not_ be safe
@@ -243,10 +254,14 @@ class PasswordHash {
 	function CheckPassword($password, $stored_hash)
 	{
 		$hash = $this->crypt_private($password, $stored_hash);
-		if ($hash[0] == '*')
+		if ($hash[0] === '*')
 			$hash = crypt($password, $stored_hash);
 
-		return $hash == $stored_hash;
+		# This is not constant-time.  In order to keep the code simple,
+		# for timing safety we currently rely on the salts being
+		# unpredictable, which they are at least in the non-fallback
+		# cases (that is, when we use /dev/urandom and bcrypt).
+		return $hash === $stored_hash;
 	}
 }
 
