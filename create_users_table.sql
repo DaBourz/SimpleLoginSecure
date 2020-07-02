@@ -1,13 +1,14 @@
 # Sample table structure for the SimpleLoginSecure CodeIgniter Library.
-# Version for MySQL 5.0 or 5.5
+# Version for MySQL 5.0+
+
+DROP TABLE IF exists `users`;
 
 CREATE TABLE `users` (
-  `user_id` int(10) unsigned NOT NULL auto_increment,
-  `user_email` varchar(255) NOT NULL default '',
-  `user_pass` varchar(60) NOT NULL default '',
-  `user_date` datetime NOT NULL default '0000-00-00 00:00:00',
-  `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
-  `user_last_login` datetime NULL default NULL,
-  PRIMARY KEY  (`user_id`),
-  UNIQUE KEY `user_email` (`user_email`)
-) DEFAULT CHARSET=utf8;
+  `user_id` INTEGER NOT NULL DEFAULT 00000000000000, -- must use gen id in php code
+  `user_email` TEXT NOT NULL DEFAULT '', -- compat with all dbs, but cannot be empty
+  `user_pass` TEXT NOT NULL DEFAULT '', -- compat with all dbs, but cannot be empty
+  `user_date` DATETIME NOT NULL DEFAULT '1000-01-01 00:00:00',  -- compat with all dbs
+  `user_modified` DATETIME NOT NULL DEFAULT '1000-01-01 00:00:00',  -- compat with all dbs
+  `user_last_login` DATETIME NULL DEFAULT '1000-01-01 00:00:00', -- compat with all dbs
+  PRIMARY KEY  (`user_id`)
+);

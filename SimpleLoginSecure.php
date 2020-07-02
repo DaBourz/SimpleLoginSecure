@@ -92,6 +92,7 @@ class SimpleLoginSecure
 
 		//Insert account into the database
 		$data = array(
+					'user_id' => date('YmdHis'),
 					'user_email' => $user_email,
 					'user_pass' => $user_pass_hashed,
 					'user_date' => date('c'),
