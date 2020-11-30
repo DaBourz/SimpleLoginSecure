@@ -1,6 +1,7 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once('phpass-0.3/PasswordHash.php');
+//require_once('phpass-0.4/PasswordHash.php'); // This is for PHP 3 to 5
+require_once('phpass-0.5/PasswordHash.php'); // This is for PHP 5 to 7
 
 define('PHPASS_HASH_STRENGTH', 8);
 define('PHPASS_HASH_PORTABLE', false);
