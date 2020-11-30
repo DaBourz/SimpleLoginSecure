@@ -1,7 +1,7 @@
 #SimpleLogin Secure
-**Name: SimpleLoginSecure 3.0**  
+**Name: SimpleLoginSecure 3.1.1**  
 **Released: Feb 8, 2012**  
-**Updated: Oct 5, 2016**  
+**Updated: Nov 30, 2020**  
 **CI Version: Works now with CodeIgniter 2 and 3**  
 **Author: Stéphane Bourzeix**  
 
@@ -20,6 +20,8 @@ _SimpleLogin-Secure version 2 and 3 are by Stéphane Bourzeix from Alex Dunae's 
   * Removed the Now() MySQL call and using PHP date() instead
   * Bug fixes
   * Added TAG v2.1.2 as a reference to the old version for CI 2
+  * Added TAG v3 as a reference to Code Igniter 3
+  * Updated PHPASS to both last versions for any PHP, please choose on top of the file
 
 
 
@@ -33,7 +35,8 @@ For more information on why md5 hashing is not enough, see the excellent post ab
 
 **Installation and configuration :**
 
-Copy SimpleLoginSecure.php and the entire phpass-0.3 directory to your application/libraries directory.
+Copy SimpleLoginSecure.php and the entire phpass-0.5 directory to your application/libraries directory.
+If you're on PHP 3 to 5 use PHPASS 4 and change the line of the require at the top of the file.
 
 Create your database table using the following SQL sample. SQL files are provided.  
 You can also edit the hash length and portability constants at the top of SimpleLoginSecure.php.
@@ -100,4 +103,4 @@ _Credits_
 _The original Simplelogin library was written by Anthony Graddy._    
 _SimpleLogin-Secure was written by Alex Dunae, 2008._  
 _SimpleLogin-Secure new version, 2.0, for Code Igniter II by Stéphane Bourzeix 2011/2013._
-_SimpleLogin-Secure new version, 3.0, for Code Igniter II and III by Stéphane Bourzeix 2016._
+_SimpleLogin-Secure new version, 3.0, for Code Igniter II and III by Stéphane Bourzeix 2020._

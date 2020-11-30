@@ -201,6 +201,7 @@ class SimpleLoginSecure
 				$this->CI->session->sess_create();
 			}
 
+			//Update last login date
 			$data = array('user_last_login' => date('c'));
 			$this->db->where('user_id', $user_data['user_id']); 
 			$this->db->update($this->user_table, $data);
