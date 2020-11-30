@@ -14,19 +14,35 @@ define('PHPASS_HASH_PORTABLE', false);
  * Simplelogin expects the following database setup. If you are not using 
  * this setup you may need to do some tweaking.
  * 
- * DROP TABLE IF exists `nomina_users`;
- * CREATE TABLE `nomina_users` (
- *   `user_id` INTEGER unsigned NOT NULL DEFAULT 00000000000000,
- *   `user_email` TEXT NOT NULL DEFAULT '',
- *   `user_pass` TEXT NOT NULL DEFAULT '',
- *   `user_date` DATETIME NOT NULL DEFAULT '1000-01-01 00:00:00',
- *   `user_modified` DATETIME NOT NULL DEFAULT '1000-01-01 00:00:00',
- *   `user_last_login` DATETIME NULL DEFAULT '1000-01-01 00:00:00',
- *   PRIMARY KEY  (`user_id`)
- * );
+ * For MYSQL 5.0 and 5.5 use :
+ *
+ *   CREATE TABLE `users` (
+ *     `user_id` int(10) unsigned NOT NULL auto_increment,
+ *     `user_email` varchar(255) NOT NULL default '',
+ *     `user_pass` varchar(60) NOT NULL default '',
+ *     `user_date` datetime NOT NULL default '0000-00-00 00:00:00',
+ *     `user_modified` datetime NOT NULL default '0000-00-00 00:00:00',
+ *     `user_last_login` datetime NULL default NULL,
+ *     PRIMARY KEY  (`user_id`),
+ *     UNIQUE KEY `user_email` (`user_email`),
+ *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ *
+ * For MYSQL 5.6 and more use :
+ *
+ *   CREATE TABLE `users` (
+ *     `user_id` int(10) unsigned NOT NULL auto_increment,
+ *     `user_email` varchar(255) NOT NULL default '',
+ *     `user_pass` varchar(60) NOT NULL default '',
+ *     `user_date` datetime NOT NULL default CURRENT_TIMESTAMP,
+ *     `user_modified` datetime NOT NULL default CURRENT_TIMESTAMP,
+ *     `user_last_login` datetime NULL default NULL,
+ *     PRIMARY KEY  (`user_id`),
+ *     UNIQUE KEY `user_email` (`user_email`),
+ *   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ *
  * 
  * @package   SimpleLoginSecure
- * @version   2.1.1
+ * @version   3.1.1
  * @author    Stéphane Bourzeix, Pixelmio <stephane[at]bourzeix.com>
  * @copyright Copyright (c) 2012-2013, Stéphane Bourzeix
  * @license   http://www.gnu.org/licenses/gpl-3.0.txt
@@ -78,7 +94,6 @@ class SimpleLoginSecure
 
 		//Insert account into the database
 		$data = array(
-					'user_id' => date('YmdHis'),
 					'user_email' => $user_email,
 					'user_pass' => $user_pass_hashed,
 					'user_date' => date('c'),
