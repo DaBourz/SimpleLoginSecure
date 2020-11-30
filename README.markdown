@@ -22,6 +22,7 @@ _SimpleLogin-Secure version 2 and 3 are by Stéphane Bourzeix from Alex Dunae's 
   * Added TAG v2.1.2 as a reference to the old version for CI 2
   * Added TAG v3 as a reference to Code Igniter 3
   * Updated PHPASS to both last versions for any PHP, please choose on top of the file
+  * Last version befopre CodeIgniter 4
 
 
 
